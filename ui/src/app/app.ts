@@ -463,6 +463,18 @@ export class App implements AfterViewInit, OnInit, OnDestroy {
     return type.charAt(0).toUpperCase() + type.slice(1);
   }
 
+  activeDownloadTypeLabel(): string {
+    return this.downloadType.charAt(0).toUpperCase() + this.downloadType.slice(1);
+  }
+
+  getSourceHost(url: string): string {
+    try {
+      return new URL(url).hostname.replace(/^www\./, '');
+    } catch {
+      return 'Source';
+    }
+  }
+
   formatCodecLabel(download: Download): string {
     if (download.download_type !== 'video') {
       const format = (download.format || '').toUpperCase();

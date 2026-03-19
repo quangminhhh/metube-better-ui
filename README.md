@@ -27,6 +27,71 @@ services:
       - /path/to/downloads:/downloads
 ```
 
+## 🧪 Run locally for UI development
+
+This repo contains:
+
+* a Python `aiohttp` backend in `app/`
+* an Angular frontend in `ui/`
+
+The backend serves the production frontend build from `ui/dist/metube/browser`, so the most reliable local workflow is:
+
+### 1. Install frontend dependencies
+
+```bash
+cd ui
+pnpm install
+```
+
+If your machine uses Corepack and `pnpm install` still tries to resolve a broken cached pnpm version, run this once and then retry:
+
+```bash
+corepack prepare pnpm@9.15.9 --activate
+```
+
+### 2. Run the Python backend
+
+In another terminal:
+
+```bash
+uv sync
+python3 app/main.py
+```
+
+The backend listens on `http://localhost:8081`.
+If you only run this step, the app is still usable at `http://localhost:8081` because the backend serves the latest built frontend bundle from `ui/dist/metube/browser`.
+
+### 3. Start the Angular dev server
+
+Back in `ui/`:
+
+```bash
+pnpm start
+```
+
+The Angular dev server listens on `http://localhost:4200`.
+This step is optional and is only needed when you want live frontend hot reload while editing the UI.
+
+A `proxy.conf.json` file is included so `ng serve` can forward API and Socket.IO traffic to the backend on port `8081`.
+
+### 4. Build the frontend for the backend-served version
+
+When you want to test the exact static bundle served by the backend:
+
+```bash
+cd ui
+pnpm build
+
+cd ..
+python3 app/main.py
+```
+
+Then open:
+
+```text
+http://localhost:8081
+```
+
 ## ⚙️ Configuration via environment variables
 
 Certain values can be set via environment variables, using the `-e` parameter on the docker command line, or the `environment:` section in docker-compose.
